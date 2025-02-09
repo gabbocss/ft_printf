@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_printf_funciones.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: inbauman <inbauman@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/07 09:29:33 by inbauman          #+#    #+#             */
+/*   Updated: 2025/02/07 13:46:03 by inbauman         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_printf.h"
 
 /*int imprimir_decimales(int decimales)
@@ -47,33 +59,33 @@
 }*/
 int	numeros_dos_cifras(long long num)
 {
-    char	nbr[11];
+	char	nbr[11];
 	int		i;
-    int caracteres;
+	int		caracteres;
 
-    caracteres = 0;
+	caracteres = 0;
 	i = 0;
-    while (num != 0)
+	while (num != 0)
 	{
-        nbr[i] = (num % 10) + '0';
+		nbr[i] = (num % 10) + '0';
 		num = num / 10;
 		i++;
-	} 
-    nbr[i] = '\0';
-    caracteres = i;
-    while (--i >= 0)
+	}
+	nbr[i] = '\0';
+	caracteres = i;
+	while (--i >= 0)
 	{
 		write(1, &nbr[i], 1);
 	}
-    return (caracteres);
+	return (caracteres);
 }
 
 int	ft_putnbr(long long num)
 {
 	char	nbr;
-    int caracteres;
+	int		caracteres;
 
-    caracteres = 0;
+	caracteres = 0;
 	if (num == -2147483648)
 	{
 		write(1, "-2147483648", 11);
@@ -83,76 +95,49 @@ int	ft_putnbr(long long num)
 	{
 		write(1, "-", 1);
 		num = -num;
-        caracteres++;
+		caracteres++;
 	}
 	if (num >= 0 && num < 10)
 	{
 		nbr = num + '0';
 		write(1, &nbr, 1);
-        caracteres++;
-        return (caracteres);
+		caracteres++;
+		return (caracteres);
 	}
 	if (num >= 10)
 		caracteres += numeros_dos_cifras(num);
-    return (caracteres);
-}
-
-int numero_hex(unsigned int num, char c)
-{
-    char base_hex[16] = "0123456789abcdef";
-    char bufer[16];
-    int i;
-    int caracteres;
-
-    i = 0;
-    caracteres = 0;
-    if (c == 'X')
-    {
-        while (base_hex[i])
-        {
-            base_hex[i] = ft_toupper(base_hex[i]);
-            i++;
-        }
-        i = 0;
-    }
-    while (num)
-    {
-        bufer[i] = base_hex[num % 16];
-        num /= 16;
-        i++;
-    }
-    bufer[i] = '\0';
-    caracteres += ft_putstr_inverso(bufer, i);
-    return (caracteres);
-}
-
-int	ft_toupper(int c)
-{
-	if (c >= 'a' && c <= 'z')
-		return (c - 'a' + 'A');
-	return (c);
-}
-int	ft_putstr_inverso(char *s, int i)
-{
-	int caracteres;
-    
-	caracteres = i;
-	if (s == NULL)
-		return (0);
-    while (i >= 0)
-	{
-        write(1, &s[i], 1);
-		i--;
-	}
 	return (caracteres);
 }
+
+int	numero_hex(unsigned int num, char c)
+{
+	char	*base_hex;
+	int		caracteres;
+
+	caracteres = 0;
+	if (num == 0)
+		return (write(1, "0", 1));
+	if (c == 'x')
+		base_hex = "0123456789abcdef";
+	else
+		base_hex = "0123456789ABCDEF";
+	if (num >= 16)
+		caracteres += numero_hex(num / 16, c);
+	num %= 16;
+	caracteres += write(1, &base_hex[num], 1);
+	return (caracteres);
+}
+
 int	ft_putstr(char *s)
 {
-	int caracteres;
+	int	caracteres;
 
 	caracteres = 0;
 	if (s == NULL)
-		return (0);
+	{
+		write(1, "(null)", 6);
+		return (6);
+	}
 	while (*s)
 	{
 		write(1, s, 1);
@@ -162,35 +147,20 @@ int	ft_putstr(char *s)
 	return (caracteres);
 }
 
-int ft_putchar(char c)
+int	ft_puthex(unsigned long long p)
 {
-	write(1, &c, 1);
-	return 1;
-}
-int ft_puthex(void *c)
-{
-	unsigned long direccion = (unsigned long)c;
-	char base_hex[] = "0123456789ABCDEF";
-	char numero_hex[16];
-	int contador;
-	int caracteres;
+	char	*base_hex;
+	int		caracteres;
 
-	caracteres = 2;
-	contador = 0;
-	while(direccion)
-	{
-		numero_hex[contador] = base_hex[direccion % 16];
-		direccion /= 16;
-		contador++;
-	}
-	write(1, "0x", 2);
-	numero_hex[contador] = '\0';
-	contador--;
-	while(contador >= 0)
-	{
-		write(1, &numero_hex[contador], 1);
-		caracteres++;
-		contador--;
-	}
+	base_hex = "0123456789abcdef";
+	caracteres = 0;
+	if (p == 0)
+		return (write(1, "(nil)", 5));
+	if (p >= 16)
+		caracteres += ft_puthex(p / 16);
+	if (caracteres == 0)
+		caracteres += write(1, "0x", 2);
+	p %= 16;
+	caracteres += write(1, &base_hex[p], 1);
 	return (caracteres);
 }

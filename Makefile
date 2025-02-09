@@ -2,8 +2,8 @@ NAME = libftprintf.a
 
 LIB_OBJECTS = ft_printf.o ft_printf_funciones.o
 
-CC = gcc
-CFLAGS = -Wall -Wextra 
+CC = cc
+CFLAGS = -Wall -Wextra -Werror
 
 all: $(NAME)
 
@@ -14,10 +14,10 @@ $(NAME): $(LIB_OBJECTS)
 	ar rcs $(NAME) $(LIB_OBJECTS)
 
 clean:
-	rm -f $(LIB_OBJECTS)
+	rm -rf $(LIB_OBJECTS)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -rf $(NAME)
 
 re: fclean all
 
